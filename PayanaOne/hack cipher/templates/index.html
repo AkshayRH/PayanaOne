@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payana One — Your journey, planned smarter.</title>
+    <meta name="description" content="Payana One — Your journey, planned smarter. Plan personalized trips, manage budgets, discover curated stays, and explore interactive maps in one unified place.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="/static/style.css">
+    <script>
+        (function() {
+            try {
+                var savedTheme = localStorage.getItem('payana_theme');
+                if (savedTheme === 'dark') {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                }
+            } catch (e) {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        })();
+    </script>
+</head>
+
+<body>
+<div class="main">
+
+    <!-- LEFT PANEL -->
+    <div class="left">
+        <div class="left-top">
+            <div class="brand-row">
+                <div class="logo">
+                    <div class="logo-mark">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+                        </svg>
+                    </div>
+                    <span class="logo-text">Payana<span class="logo-accent">One</span></span>
+                </div>
+                <div class="header-actions">
+                    <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Switch to dark mode" title="Switch to dark mode" type="button">
+                        <span class="theme-toggle-icon">🌙</span>
+                        <span class="theme-toggle-text">Dark</span>
+                    </button>
+                    <div class="brand-pill">
+                        <span class="pill-dot"></span> Smart Travel
+                    </div>
+                </div>
+            </div>
+
+            <h1 class="hero-heading">Your Next Adventure <span class="hero-highlight">Starts Here</span></h1>
+            <p class="hero-tagline">Your journey, planned smarter.</p>
+            <p class="hero-desc">Plan personalized day-by-day itineraries, track your budget in real time, discover curated stays, and explore interactive route maps — all in one unified workspace.</p>
+        </div>
+
+        <!-- Destination Discovery -->
+        <div class="left-features">
+            <div class="quickstart-label" style="margin-bottom:10px;">Popular Destinations</div>
+            <div class="left-destinations">
+                <div class="dest-card" onclick="selectDestinationCard('Goa')" tabindex="0" role="button" aria-label="Select Goa">
+                    <span class="dest-icon">🏖️</span>
+                    <div class="dest-info">
+                        <div class="dest-name">Goa</div>
+                        <div class="dest-tag">Beach · Nightlife</div>
+                    </div>
+                </div>
+                <div class="dest-card" onclick="selectDestinationCard('Manali')" tabindex="0" role="button" aria-label="Select Manali">
+                    <span class="dest-icon">🏔️</span>
+                    <div class="dest-info">
+                        <div class="dest-name">Manali</div>
+                        <div class="dest-tag">Mountains · Adventure</div>
+                    </div>
+                </div>
+                <div class="dest-card" onclick="selectDestinationCard('Jaipur')" tabindex="0" role="button" aria-label="Select Jaipur">
+                    <span class="dest-icon">🏯</span>
+                    <div class="dest-info">
+                        <div class="dest-name">Jaipur</div>
+                        <div class="dest-tag">Culture · Heritage</div>
+                    </div>
+                </div>
+                <div class="dest-card" onclick="selectDestinationCard('Andaman')" tabindex="0" role="button" aria-label="Select Andaman">
+                    <span class="dest-icon">🌊</span>
+                    <div class="dest-info">
+                        <div class="dest-name">Andaman</div>
+                        <div class="dest-tag">Islands · Nature</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Start -->
+            <div class="quickstart-section">
+                <div class="quickstart-label">Quick Start</div>
+                <div class="quickstart-pills">
+                    <button class="quickstart-pill" data-preset="weekend" onclick="quickStartPreset('weekend')" aria-label="Weekend getaway preset">Weekend Getaway</button>
+                    <button class="quickstart-pill" data-preset="budget" onclick="quickStartPreset('budget')" aria-label="Budget trip preset">Budget Trip</button>
+                    <button class="quickstart-pill" data-preset="adventure" onclick="quickStartPreset('adventure')" aria-label="Nature and adventure preset">Adventure</button>
+                    <button class="quickstart-pill" data-preset="family" onclick="quickStartPreset('family')" aria-label="Family vacation preset">Family</button>
+                </div>
+            </div>
+
+            <!-- Recent Searches -->
+            <div class="recent-searches-section">
+                <div class="recent-header">
+                    <div class="recent-label" style="display: flex; align-items: center; gap: 6px;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                            <path d="M3 3v5h5"/>
+                            <path d="M12 7v5l4 2"/>
+                        </svg>
+                        Recent Searches
+                    </div>
+                    <button class="recent-clear-btn" onclick="clearRecentSearches()" aria-label="Clear recent searches">Clear all</button>
+                </div>
+                <div id="recentSearchesWidget"></div>
+            </div>
+        </div>
+
+        <div class="left-bottom" style="display:none;"></div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right">
+
+        <!-- FORM centered -->
+        <div class="form-section">
+            <div class="form-header">
+                <div class="form-badge">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px;">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+                    </svg>
+                    Trip Planner
+                </div>
+                <h2>Plan Your Trip with <span class="brand-name-highlight">Payana One</span></h2>
+                <p class="form-subtitle">Customize your travel parameters for a curated, day-by-day plan.</p>
+            </div>
+
+            <div class="form-grid">
+                <div class="input-group">
+                    <label for="destination">Destination</label>
+                    <div class="autocomplete-wrapper" id="destination-ac-wrapper">
+                        <input id="destination" placeholder="e.g. Dandeli, Goa, Paris" autocomplete="off" spellcheck="false">
+                        <div class="ac-dropdown" id="destination-dropdown"></div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="start">Starting From</label>
+                    <div class="autocomplete-wrapper" id="start-ac-wrapper">
+                        <input id="start" placeholder="e.g. Bengaluru, Mumbai" autocomplete="off" spellcheck="false">
+                        <div class="ac-dropdown" id="start-dropdown"></div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="days">Number of Days</label>
+                    <input id="days" type="number" min="1" max="30" placeholder="e.g. 4">
+                </div>
+                <div class="input-group">
+                    <label for="budget">Budget (₹)</label>
+                    <input id="budget" type="number" min="500" step="500" placeholder="e.g. 15000">
+                </div>
+                <div class="input-group">
+                    <label for="style">Travel Style</label>
+                    <div class="select-wrapper">
+                        <select id="style">
+                            <option value="Budget">Budget</option>
+                            <option value="Mid-range" selected>Mid-range</option>
+                            <option value="Luxury">Luxury</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="interests">Interests</label>
+                    <div class="select-wrapper">
+                        <select id="interests">
+                            <option value="Nature">Nature</option>
+                            <option value="Adventure">Adventure</option>
+                            <option value="Food">Food</option>
+                            <option value="Culture">Culture</option>
+                            <option value="Nightlife">Nightlife</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="budgetBreakdown"></div>
+
+            <div class="btn-row">
+                <button id="btn" onclick="generatePlan()">Generate Plan</button>
+                <button class="reset-btn" onclick="resetForm()" type="button">Reset</button>
+            </div>
+        </div>
+
+        <!-- ANIMATED TRAVEL STRIP at bottom -->
+        <div class="travel-strip-container">
+            <div class="strip-header">
+                <div class="strip-header-left">
+                    <span class="strip-tag-badge">POPULAR PICKS</span>
+                    <span class="strip-header-title">Trending Destinations</span>
+                </div>
+                <span class="strip-header-hint">Click any place to auto-fill</span>
+            </div>
+            <div class="travel-strip">
+                <div class="strip-track" id="stripTrack">
+                    <!-- filled by JS -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ✅ IMMERSIVE FULLSCREEN RESULT OVERLAY -->
+<div class="overlay" id="overlay">
+
+    <!-- HERO SECTION -->
+    <div class="hero-section" id="heroSection">
+        <div class="hero-image" id="heroImage"></div>
+        <div class="hero-gradient"></div>
+        <div class="hero-content">
+            <div class="hero-top-bar">
+                <div class="hero-back-btn" onclick="closeOverlay()" aria-label="Back to Payana One">
+                    <span>←</span> Back to Payana One
+                </div>
+                <button class="hero-expand-btn" id="heroExpandBtn" onclick="toggleHero()" aria-label="Expand trip details" aria-expanded="false">▾ Details</button>
+                <button class="theme-toggle-btn hero-theme-btn" id="heroThemeToggleBtn" onclick="toggleTheme()" aria-label="Switch to dark mode" title="Switch to dark mode" type="button">
+                    <span class="theme-toggle-icon">🌙</span>
+                    <span class="theme-toggle-text">Dark</span>
+                </button>
+            </div>
+            <div class="hero-info">
+                <h1 class="hero-title" id="heroTitle">Your Destination</h1>
+                <div class="hero-badges" id="heroBadges">
+                    <!-- Filled by JS: days, budget, weather, style -->
+                </div>
+            </div>
+            <div class="hero-actions" id="heroActions">
+                <button class="hero-action-btn" onclick="saveItinerary()" id="saveBtn" title="Save Trip">
+                    <span>💾</span> Save
+                </button>
+                <button class="hero-action-btn" onclick="shareTrip()" title="Share Trip">
+                    <span>📤</span> Share
+                </button>
+                <button class="hero-action-btn" onclick="exportPDF()" title="Export PDF">
+                    <span>📄</span> Export
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FLOATING TAB NAVIGATION -->
+    <div class="overlay-tabs" id="overlayTabs">
+        <button class="tab-btn active" data-tab="itinerary" onclick="switchTab('itinerary')">Itinerary</button>
+        <button class="tab-btn" data-tab="hotels" onclick="switchTab('hotels')">Hotels</button>
+        <button class="tab-btn" data-tab="gallery" onclick="switchTab('gallery')">Gallery</button>
+        <button class="tab-btn" data-tab="smart" onclick="switchTab('smart')">Tools</button>
+    </div>
+
+    <!-- TABBED CONTENT -->
+    <div class="overlay-content">
+
+        <!-- Itinerary Tab — SPLIT SCREEN -->
+        <div class="tab-panel active" id="tab-itinerary">
+            <div class="view-mode-bar" id="viewModeBar">
+                <button class="view-btn" data-view="itinerary" onclick="setViewMode('itinerary')" aria-label="Itinerary view">Itinerary</button>
+                <button class="view-btn active" data-view="split" onclick="setViewMode('split')" aria-label="Split view">Split View</button>
+                <button class="view-btn" data-view="map" onclick="setViewMode('map')" aria-label="Map view">Map</button>
+            </div>
+            <div class="split-view view-split">
+                <div class="itinerary-panel" id="itineraryPanel">
+                    <div class="overlay-body" id="overlayBody"></div>
+                </div>
+                <div class="map-panel" id="mapPanel">
+                    <div id="tripMap"></div>
+                    <div class="map-legend" id="mapLegend"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hotels Tab -->
+        <div class="tab-panel" id="tab-hotels">
+            <div class="hotels-container" id="hotelsContainer"></div>
+        </div>
+
+        <!-- Gallery Tab -->
+        <div class="tab-panel" id="tab-gallery">
+            <div class="gallery-container" id="galleryContainer"></div>
+        </div>
+
+        <!-- Smart Features Tab -->
+        <div class="tab-panel" id="tab-smart">
+            <div class="smart-container">
+                <div class="smart-grid">
+
+                    <!-- Travel Notes -->
+                    <div class="smart-card" id="notesCard">
+                        <div class="smart-card-header">
+                            <span>📝</span> Travel Notes
+                        </div>
+                        <div class="smart-card-body">
+                            <textarea id="travelNotes" class="smart-textarea" placeholder="Write your travel notes, reminders, and ideas here..."></textarea>
+                            <button class="smart-save-btn" onclick="saveTravelNotes()">Save Notes</button>
+                        </div>
+                    </div>
+
+                    <!-- Packing Checklist -->
+                    <div class="smart-card" id="checklistCard">
+                        <div class="smart-card-header">
+                            <span>🧳</span> Packing Checklist
+                        </div>
+                        <div class="smart-card-body">
+                            <div id="packingList"></div>
+                            <div class="checklist-add">
+                                <input type="text" id="newPackItem" placeholder="Add item..." class="smart-input">
+                                <button class="smart-add-btn" onclick="addPackingItem()">+</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Budget Tracker -->
+                    <div class="smart-card" id="budgetCard">
+                        <div class="smart-card-header">
+                            <span>💰</span> Budget Tracker
+                        </div>
+                        <div class="smart-card-body" id="budgetTrackerBody">
+                            <!-- Filled by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Emergency Contacts -->
+                    <div class="smart-card" id="emergencyCard">
+                        <div class="smart-card-header">
+                            <span>🏥</span> Emergency Contacts
+                        </div>
+                        <div class="smart-card-body" id="emergencyBody">
+                            <!-- Filled by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Favorite Places -->
+                    <div class="smart-card" id="favoritesCard">
+                        <div class="smart-card-header">
+                            <span>⭐</span> Favorite Places
+                        </div>
+                        <div class="smart-card-body" id="favoritesBody">
+                            <div class="empty-state-small">No favorites yet. Click ♡ on places to add them.</div>
+                        </div>
+                    </div>
+
+                    <!-- Weather Info -->
+                    <div class="smart-card" id="weatherCard">
+                        <div class="smart-card-header">
+                            <span>🌤️</span> Weather Forecast
+                        </div>
+                        <div class="smart-card-body" id="weatherBody">
+                            <!-- Filled by JS -->
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MOBILE BOTTOM NAV -->
+    <div class="mobile-bottom-nav" id="mobileNav">
+        <button class="mob-nav-btn active" data-tab="itinerary" onclick="switchTab('itinerary')">
+            <span>📋</span>Plan
+        </button>
+        <button class="mob-nav-btn" data-tab="hotels" onclick="switchTab('hotels')">
+            <span>🏨</span>Hotels
+        </button>
+        <button class="mob-nav-btn" data-tab="gallery" onclick="switchTab('gallery')">
+            <span>📸</span>Gallery
+        </button>
+        <button class="mob-nav-btn" data-tab="smart" onclick="switchTab('smart')">
+            <span>🧰</span>Tools
+        </button>
+    </div>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="/static/script.js"></script>
+</body>
+
+</html>
